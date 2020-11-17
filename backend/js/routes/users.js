@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const { validateLogin } = require("../middlewares/users");
+const { validateLogin, validatePassword } = require("../middlewares/users");
 const { validateToken } = require("../middlewares/contacts");
 
 const jwt = require("jsonwebtoken");
@@ -11,7 +11,6 @@ const SECRET = "53c73_70k3n1d";
 router.post("/login", validateLogin, async (req, res) => {
   try {
       const username = await access.findByUser(req.body);
-      console.log(username.length);
 
       const { pass } = req.body;
 
@@ -56,7 +55,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post('/create', validateToken, async (req, res)=>{
+router.post('/create', validatePassword, async (req, res)=>{
   try {
     const user = await access.findByEmail(req.body);
     if (user.length) {

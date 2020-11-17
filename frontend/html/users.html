@@ -47,23 +47,23 @@
     </nav>
   </header>
   <main id="main">
-    <h1>Companies</h1>
+    <h1>Users</h1>
     <div class="containerUp">
       <button class="btn active btn-sm"><i class="fas fa-download"></i></button>
-      <button class="btn active btn-sm">Export Companies</button>
-      <button id="add" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalCRUD">Add Company</button>
+      <button class="btn active btn-sm">Export Users</button>
+      <button id="add" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalCRUD">Add User</button>
     </div>
     <section id="list">
       <div class="container">
-        <table id="tCompanies" class="display" style="width:100%">
+        <table id="tUsers" class="display" style="width:100%">
           <thead>
             <tr>
               <th>Select</th>
+              <th>Username</th>
               <th>Name</th>
-              <th>Address</th>
+              <th>Last Name</th>
               <th>Email</th>
-              <th>Phone</th>
-              <th>City</th>
+              <th>Role</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -81,59 +81,52 @@
         <div class="modal-content">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h2 id="title">Create Company</h2>
+            <h2 id="title">Create User</h2>
           </div>
           <div class="modal-body">
             <form role="form" class="needs-validation" novalidate>
               <div class="col-xs-12">
                 <div class="col-md-12">
-                  <h3>Company Information</h3>
+                  <h3>User Information</h3>
+                  <div class="form-group">
+                    <label class="form-control-label">Username *</label>
+                    <input id="username" maxlength="100" type="text" required="required" class="form-control form-control-danger" placeholder="Username"/>
+                  </div>
                   <div class="form-group">
                     <label class="control-label">Name *</label>
                     <input id="name" maxlength="100" type="text" required="required" class="form-control" placeholder="Name" />
                   </div>
                   <div class="form-group">
-                    <label class="control-label">Address *</label>
-                    <input id="address" maxlength="100" type="text" required="required" class="form-control" placeholder="Address" />
+                    <label class="control-label">Last Name *</label>
+                    <input id="last_name" maxlength="100" type="text" required="required" class="form-control" placeholder="Last Name" />
                   </div>
                   <div class="form-group">
                     <label class="control-label">Email *</label>
                     <input id="email" maxlength="100" type="email" required="required" class="form-control" placeholder="Email" />
                   </div>
                   <div class="form-group">
-                    <label class="control-label">Phone *</label>
-                    <input id="phone" maxlength="100" type="text" required="required" class="form-control" placeholder="Phone" />
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label">Regions *</label>
-                    <br>
-                    <select id="regions" class="form-control" placeholder="Select...">
-                      <option value="">Select...</option>
-                      <!-- CODE HERE -->
+                    <label for="company">Role *</label>
+                    <select id="roles" class="form-control" placeholder="Select...">
+                      <option id="fOptCom" value="0">Select...</option>
+                      <option id="admin" value="1">Admin</option>
+                      <option id="user" value="2">User</option>
                     </select>
                   </div>
                   <div class="form-group">
-                    <label class="control-label">Country *</label>
-                    <br>
-                    <select id="countries" class="form-control" placeholder="Select...">
-                      <option value="">Select...</option>
-                      <!-- CODE HERE -->
-                    </select>
+                    <label class="control-label">Password *</label>
+                    <input id="password" maxlength="100" type="password" required="required" class="form-control" placeholder="Password" />
                   </div>
                   <div class="form-group">
-                    <label class="control-label">City *</label>
-                    <select id="cities" class="form-control" placeholder="Select...">
-                      <option value="">Select...</option>
-                      <!-- CODE HERE -->
-                    </select>
+                    <label class="control-label">Repeat Password *</label>
+                    <input id="rpassword" maxlength="100" type="password" required="required" class="form-control" placeholder="Repeat Password" />
                   </div>
                 </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button id="addCompany" class="btn btn-success" type="button" data-dismiss="modal">Add Company</button>
-            <button id="updateCompany" class="btn btn-warning" type="button">Update Company</button>
+            <button id="addUser" class="btn btn-success" type="button" data-dismiss="modal">Add User</button>
+            <button id="updateUser" class="btn btn-warning" type="button">Update User</button>
             <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -144,13 +137,13 @@
         <div class="modal-content">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h2>!Delete Company!</h2>
+            <h2>!Delete User!</h2>
           </div>
           <div class="modal-body">
             <h5>Do you really want to delete?</h5>
           </div>
           <div class="modal-footer">
-            <button id="deleteCompany" class="btn btn-danger" type="button" data-dismiss="modal">Delete Company</button>
+            <button id="deleteUser" class="btn btn-danger" type="button" data-dismiss="modal">Delete User</button>
             <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -164,7 +157,7 @@
   <script src="../styles/js/bootstrap.min.js"></script>
   <script src="../styles/js/bootstrap.bundle.min.js"></script>
   <script src="../styles/datatables/DataTables-1.10.22/js/jquery.dataTables.min.js"></script>
-  <script src="../js/companies.js"></script>
+  <script src="../js/users.js"></script>
   <!-- <script src="../js/add_contacts.js"></script> -->
 </body>
 </html>

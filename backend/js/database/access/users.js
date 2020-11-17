@@ -7,14 +7,18 @@ const findByUser = async (body) => {
 };
 
 const findByEmail = async (body) => {
-    console.log('entro');
     return await database.sequelize.query(`SELECT * FROM USERS WHERE EMAIL = "${body.email}";`, {
       type: database.sequelize.QueryTypes.SELECT,
     });
 };
 
 const findAll = async () => {
-    return await database.sequelize.query(`SELECT * FROM USERS;`, {
+    return await database.sequelize.query(`SELECT USERS.ID AS userId,
+      USERS.USERNAME AS username, USERS.NAME AS name, USERS.LAST_NAME AS last_name, USERS.EMAIL AS email,
+      ROLES.ID AS roleId, ROLES.DESCRIPTION AS role
+      FROM USERS USERS
+      INNER JOIN ROLES ROLES
+      ON USERS.ROLEID = ROLES.ID`, {
       type: database.sequelize.QueryTypes.SELECT,
     });
 };
@@ -23,7 +27,7 @@ const findById = async (id) => {
     return await database.sequelize.query(`SELECT * FROM USERS WHERE ID = "${id}";`, {
       type: database.sequelize.QueryTypes.SELECT,
     });
-  };
+};
 
 const add = async (body) => {
     return await database.sequelize.query(
@@ -46,7 +50,7 @@ const deleteUser = async (id) => {
       `DELETE FROM USERS WHERE ID = ${id};`,
       { type: database.sequelize.QueryTypes.DELETE }
     );
-  };
+};
 
 module.exports = {
     findByUser,

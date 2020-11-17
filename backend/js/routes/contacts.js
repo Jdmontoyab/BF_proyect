@@ -16,7 +16,7 @@ router.get("/", validateToken, async (req, res) => {
   }
 });
 
-router.get("/:id", validateToken, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -43,7 +43,7 @@ router.post('/add', async (req, res)=>{
   }
 });
 
-router.put("/:id", validateToken, validatePermissions, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
       
@@ -55,7 +55,7 @@ router.put("/:id", validateToken, validatePermissions, async (req, res) => {
   }
 });
 
-router.delete("/:id", validateToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 

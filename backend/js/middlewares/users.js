@@ -14,6 +14,24 @@ const validateLogin = (req, res, next) => {
     }
 };
 
+const validatePassword = (req, res, next) => {
+    try {
+        const { password, rpassword } = req.body;
+        if (!password || !rpassword) {
+            return res.status(400).json({ error: "Password is required" });
+        } else {
+            if (password != rpassword) {
+                return res.status(400).json({ error: "Password Incorrect" });
+            } else {
+                next();
+            }
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 module.exports = {
-    validateLogin
+    validateLogin,
+    validatePassword
 };

@@ -1,20 +1,25 @@
-$(document).ready(function() {
-    $('#tContacts').DataTable();
-});
-
-let rows = document.getElementById("rows");
-let liUser = document.getElementById("users");
+let rows = document.getElementById("rows"); // Table Body
+let liUser = document.getElementById("users"); // Users Button
 let full_name = document.getElementById("full_name");
 let email = document.getElementById("email");
 let position = document.getElementById("position");
 let listCompanies = document.getElementById("companies");
+let fOptCom = document.getElementById("fOptCom")
 let listRegions = document.getElementById("regions");
 let listCountries = document.getElementById("countries");
 let listCities = document.getElementById("cities");
-let btnAddContact = document.getElementById("addContact");
 let interest = document.getElementById("interest");
+let fav_channel = document.getElementById("fav_channel");
+let add = document.getElementById("add");
+let btnAddContact = document.getElementById("addContact");
+let btnUpdateContact = document.getElementById("updateContact");
+let btnDeleteContact = document.getElementById("deleteContact");
 
-/* let utils = new Utils(); */
+setTimeout(() => {
+    $(document).ready(function() {
+        $('#tContacts').DataTable();
+    });
+}, 100);
 
 window.onload = function () {
     let jwt = sessionStorage.getItem("jwt");
@@ -38,8 +43,8 @@ window.onload = function () {
                                 <div class="progress-bar" style="width: ${e.interest}%" role="progressbar" aria-valuenow="${e.interest}" aria-valuemin="0" aria-valuemax="100">${e.interest}%</div>
                             </div>
                         </td>
-                        <td><button type='button' class='btn btn-info btn-sm'><span class="material-icons">create</span></button>
-                            <button type='button' class='btn btn-danger btn-sm'><span class="material-icons">delete</span></button>
+                        <td><button type='button' class='btn btn-info btn-smi' data-toggle="modal" data-target="#modalCRUD"><span class="material-icons" onclick="getContact(${e.contactsId})">create</span></button>
+                            <button type='button' class='btn btn-danger btn-smd' data-toggle="modal" data-target="#modalDelete"><span class="material-icons" onclick="confirmation(${e.contactsId})">delete</span></button>
                         </td></tr>`;
                     rows.insertAdjacentHTML('beforeend', template);
                 });
@@ -52,6 +57,13 @@ window.onload = function () {
     } else {
         location.href = "../html/index.html";
     }
+    add.addEventListener('click', () => {
+        full_name.value = "";
+        email.value = "";
+        position.value = "";
+        btnUpdateContact.style.display = "none";
+        btnAddContact.style.display = "initial";
+    });
     btnAddContact.addEventListener('click', () => {
         addContact(jwt);
     });
@@ -87,10 +99,14 @@ function findRegions(jwt) {
         listRegions.addEventListener('change', () => {
             document.getElementById('countries').innerHTML = '';
             document.getElementById('cities').innerHTML = '';
-            let option = document.createElement("option");
-            option.innerHTML = "Select...";
-            option.value = 0;
-            listCountries.appendChild(option);
+            let optionCountries = document.createElement("option");
+            let optionCities = document.createElement("option");
+            optionCountries.innerHTML = "Select...";
+            optionCountries.value = 0;
+            optionCities.innerHTML = "Select...";
+            optionCities.value = 0;
+            listCountries.appendChild(optionCountries);
+            listCities.appendChild(optionCities);
             findCountries(jwt, listRegions.value);
         });
     }).catch(error => {
@@ -99,6 +115,8 @@ function findRegions(jwt) {
 };
 
 function findCountries(jwt, regionId) {
+    console.log(regionId);
+    if (regionId != 0)
     fetch(`http://localhost:5000/rcc/countries/${regionId}`, {
             method: 'GET',
             headers: { "Authorization": "Bearer " + jwt }
@@ -111,10 +129,10 @@ function findCountries(jwt, regionId) {
         });
         listCountries.addEventListener('change', () => {
             document.getElementById('cities').innerHTML = '';
-            let option = document.createElement("option");
-            option.innerHTML = "Select...";
-            option.value = 0;
-            listCities.appendChild(option);
+            let optionCities = document.createElement("option");
+            optionCities.innerHTML = "Select...";
+            optionCities.value = 0;
+            listCities.appendChild(optionCities);
             findCities(jwt, listCountries.value);
         });
     }).catch(error => {
@@ -123,15 +141,21 @@ function findCountries(jwt, regionId) {
 }
 
 function findCities(jwt, countryId) {
+    console.log(countryId);
+    if (countryId != 0)
     fetch(`http://localhost:5000/rcc/cities/${countryId}`, {
             method: 'GET',
             headers: { "Authorization": "Bearer " + jwt }
     }).then(res => {
         res.json().then(data => {
             data.forEach((e) => {
-                /* document.getElementById('cities').innerHTML = ''; */
                 let templateCities = `<option value=${e.id}>${e.description}</option>`
                 listCities.insertAdjacentHTML('beforeend', templateCities);
+                /* document.getElementById('cities').innerHTML = '';
+                let option = document.createElement("option");
+                option.innerHTML = "Select...";
+                option.value = 0;
+                listCities.appendChild(option); */
             });
         });
         /* listCities.addEventListener('change', () => {
@@ -155,15 +179,14 @@ function addContact(jwt) {
                 "cityId": ${listCities.value},
                 "companyId": ${listCompanies.value},
                 "position": "${position.value}",
-                "fav_channel": "Whatsapp",
+                "fav_channel": "${fav_channel.value}",
                 "interest": "${interest.value}"
             }`,
-            /* body:`{"full_name":"${full_name.value}","email":"${email.value}","cityId":${listCities.value},"companyId":${listCompanies.value},"position":"${position.value}","fav_channel":"Phone","interest":"${interest.value}"}`, */
             headers:{"Content-Type":"application/json"}
     }).then(res => {
         if (res.status == 200) {
             res.json().then(data => {
-            console.log(data);
+                alert("Contact Create Successful")
             });
         } else {
             console.log("error");
@@ -172,6 +195,85 @@ function addContact(jwt) {
             console.log(error);
         }); 
     } 
+}
+
+function getContact(contactId) {
+    let jwt = sessionStorage.getItem("jwt");
+    if (jwt != null) {
+        fetch(`http://localhost:5000/contacts/${contactId}`, {
+             method: 'GET',
+             headers: { "Authorization": "Bearer " + jwt }
+     }).then(res => {
+         if (res.status == 200) {
+             res.json().then(data => {
+                full_name.value = data[0].full_name;
+                email.value = data[0].email;
+                position.value = data[0].position;
+                fOptCom.innerHTML = "Select...";
+                console.log(data);
+             });
+         } else {
+             console.log("error");
+             }
+         }).catch(error => {
+             console.log(error);
+         }); 
+    }
+    btnAddContact.style.display = "none";
+    btnUpdateContact.style.display = "initial";
+    btnUpdateContact.addEventListener('click', () => {
+        updateContact(jwt, contactId);
+    });
+}
+
+function updateContact(jwt, contactId) {
+    if (jwt != null) {
+        fetch(`http://localhost:5000/contacts/${contactId}`, {
+             method: 'PUT',
+             body: `{
+                "full_name": "${full_name.value}",
+                "email": "${email.value}",
+                "cityId": ${listCities.value},
+                "companyId": ${listCompanies.value},
+                "position": "${position.value}",
+                "fav_channel": "Whatsapp",
+                "interest": "${interest.value}"
+            }`,
+            headers:{"Content-Type":"application/json"}
+        }).then(res => {
+            if (res.status == 200) {
+                alert("Contact Updated Successful")
+            } else {
+                console.log("error");
+            }
+        }).catch(error => {
+             console.log(error);
+        }); 
+    }
+}
+
+function confirmation(contactId) {
+    btnDeleteContact.addEventListener('click', ()=> {
+        deleteContact(contactId);
+    });
+}
+
+function deleteContact(contactId) {
+    let jwt = sessionStorage.getItem("jwt");
+    if (jwt != null) {
+        fetch(`http://localhost:5000/contacts/${contactId}`, {
+            method: 'DELETE',
+            headers:{"Content-Type":"application/json"}
+        }).then(res => {
+            if (res.status == 200) {
+                alert("Contact Deleted Successfully")
+            } else {
+                console.log("error");
+            }
+        }).catch(error => {
+             console.log(error);
+        }); 
+    }
 }
 
 function parseJwt(token) {

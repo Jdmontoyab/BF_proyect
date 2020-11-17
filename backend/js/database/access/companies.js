@@ -13,6 +13,46 @@ const findAll = async () => {
     });
 };
 
+const findByEmail = async (body) => {
+  return await database.sequelize.query(`SELECT * FROM COMPANIES WHERE EMAIL = "${body.email}";`, {
+    type: database.sequelize.QueryTypes.SELECT,
+  });
+};
+
+const findById = async (id) => {
+  return await database.sequelize.query(`SELECT * FROM COMPANIES WHERE ID = "${id}";`, {
+    type: database.sequelize.QueryTypes.SELECT,
+  });
+};
+
+const add = async (body) => {
+  return await database.sequelize.query(
+    `INSERT INTO COMPANIES (name, address, email, phone, cityId) 
+     VALUES ("${body.name}","${body.address}", "${body.email}", "${body.phone}", "${body.cityId}");`,
+    { type: database.sequelize.QueryTypes.INSERT }
+  );
+};
+
+const updateCompany = async (body, id) => {
+  return await database.sequelize.query(
+    `UPDATE COMPANIES SET NAME="${body.name}", ADDRESS="${body.address}",
+    EMAIL="${body.email}", PHONE="${body.phone}", CITYID=${body.cityId} WHERE ID = ${id};`,
+    { type: database.sequelize.QueryTypes.UPDATE }
+  );
+};
+
+const deleteCompany = async (id) => {
+  return await database.sequelize.query(
+    `DELETE FROM COMPANIES WHERE ID = ${id};`,
+    { type: database.sequelize.QueryTypes.DELETE }
+  );
+};
+
 module.exports = {
-    findAll
+    findAll,
+    findByEmail,
+    findById,
+    add,
+    updateCompany,
+    deleteCompany
 };

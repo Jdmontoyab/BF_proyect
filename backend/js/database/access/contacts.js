@@ -23,8 +23,8 @@ const findByEmail = async (body) => {
   });
 };
 
-const findById = async (id) => {
-  return await database.sequelize.query(`SELECT * FROM CONTACTS WHERE ID = "${id}";`, {
+const findContactById = async (id) => {
+  return await database.sequelize.query(`${findDetailsContacts} WHERE CONTACTS.id = ${id};`, {
     type: database.sequelize.QueryTypes.SELECT,
   });
 };
@@ -56,7 +56,7 @@ const deleteContact = async (id) => {
 module.exports = {
   findAll,
   findByEmail,
-  findById,
+  findContactById,
   updateContact,
   deleteContact,
   add

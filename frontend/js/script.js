@@ -12,11 +12,9 @@ function start() {
     }).then(res => {
         if (res.status == 200) {
             res.json().then(data => {
-            console.log(data);
-            //alert(data);
-            sessionStorage.setItem("jwt", data);
-            let user = parseJwt(data);
-            location.href = "../html/contacts.html";
+                sessionStorage.setItem("jwt", data);
+                //let user = parseJwt(data);
+                location.href = "../html/contacts.html";
             });
         } else {
             username.value = "";
