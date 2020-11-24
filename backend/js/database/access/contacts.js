@@ -17,7 +17,6 @@ const findAll = async () => {
 };
 
 const findByEmail = async (body) => {
-  console.log('entro');
   return await database.sequelize.query(`SELECT * FROM CONTACTS WHERE EMAIL = "${body.email}";`, {
     type: database.sequelize.QueryTypes.SELECT,
   });

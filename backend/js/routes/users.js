@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
 const { validateLogin, validatePassword } = require("../middlewares/users");
-const { validateToken } = require("../middlewares/contacts");
 
 const jwt = require("jsonwebtoken");
 const access = require("../database/access/users");

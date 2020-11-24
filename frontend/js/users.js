@@ -1,5 +1,7 @@
+let jwt = sessionStorage.getItem("jwt");
 let rows = document.getElementById("rows"); // Table Body
 let liUser = document.getElementById("users"); // Users Button
+
 let username = document.getElementById("username");
 let name = document.getElementById("name");
 let last_name = document.getElementById("last_name");
@@ -7,6 +9,7 @@ let email = document.getElementById("email");
 let role = document.getElementById("roles");
 let password = document.getElementById("password");
 let rpassword = document.getElementById("rpassword");
+
 let title = document.getElementById("title");
 let add = document.getElementById("add");
 let btnAddUser = document.getElementById("addUser");
@@ -20,7 +23,6 @@ setTimeout(() => {
 }, 100);
 
 window.onload = function () {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         if (parseJwt(jwt).roleId == 2) {
             liUser.remove();
@@ -49,25 +51,26 @@ window.onload = function () {
     } else {
         location.href = "../html/index.html";
     }
-    add.addEventListener('click', () => {
-        username.value = "";
-        name.value = "";
-        last_name.value = "";
-        email.value = "";
-        role.value = "";
-        password.value = "";
-        rpassword.value = "";
-        title.innerHTML = "Create User"
-        btnUpdateUser.style.display = "none";
-        btnAddUser.style.display = "initial";
-    });
-    btnAddUser.addEventListener('click', () => {
-        addUser(jwt);
-    });
 };
 
+add.addEventListener('click', () => {
+    username.value = "";
+    name.value = "";
+    last_name.value = "";
+    email.value = "";
+    role.value = "";
+    password.value = "";
+    rpassword.value = "";
+    title.innerHTML = "Create User"
+    btnUpdateUser.style.display = "none";
+    btnAddUser.style.display = "initial";
+});
+
+btnAddUser.addEventListener('click', () => {
+    addUser(jwt);
+});
+
 function addUser(jwt) {
-    console.log(jwt);
     if (jwt != null) {
        fetch("http://localhost:5000/users/create", {
             method: 'POST',
@@ -84,7 +87,8 @@ function addUser(jwt) {
     }).then(res => {
         if (res.status == 200) {
             res.json().then(data => {
-                alert("User Create Successful")
+                alert("User Create Successful");
+                location.href = location.href;
             });
         } else {
             console.log("error");
@@ -96,7 +100,6 @@ function addUser(jwt) {
 }
 
 function getUser(userId) {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         fetch(`http://localhost:5000/users/${userId}`, {
              method: 'GET',
@@ -120,12 +123,20 @@ function getUser(userId) {
     title.innerHTML = "Update User"
     btnAddUser.style.display = "none";
     btnUpdateUser.style.display = "initial";
-    btnUpdateUser.addEventListener('click', () => {
-        updateUser(jwt, userId);
-    });
+    setIdUserUpdate(userId);
 }
 
-function updateUser(jwt, userId) {
+idUserUpdate = 0;
+
+function setIdUserUpdate(userId) {
+    idUserUpdate = userId;
+}
+
+btnUpdateUser.addEventListener('click', () => {
+    updateUser(idUserUpdate);
+});
+
+function updateUser(userId) {
     if (jwt != null) {
         fetch(`http://localhost:5000/users/${userId}`, {
              method: 'PUT',
@@ -141,7 +152,8 @@ function updateUser(jwt, userId) {
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("User Updated Successful")
+                alert("User Updated Successful");
+                location.href = location.href;
             } else {
                 console.log("error");
             }
@@ -151,21 +163,25 @@ function updateUser(jwt, userId) {
     }
 }
 
+idUserDelete = 0;
+
 function confirmation(userId) {
-    btnDeleteUser.addEventListener('click', ()=> {
-        deleteUser(userId);
-    });
+    idUserDelete = userId;
 }
 
+btnDeleteUser.addEventListener('click', ()=> {
+    deleteUser(idUserDelete);
+});
+
 function deleteUser(userId) {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         fetch(`http://localhost:5000/users/${userId}`, {
             method: 'DELETE',
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("User Deleted Successfully")
+                alert("User Deleted Successfully");
+                location.href = location.href;
             } else {
                 console.log("error");
             }

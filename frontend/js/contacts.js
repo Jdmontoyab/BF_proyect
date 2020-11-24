@@ -1,5 +1,14 @@
+
+
+let jwt = sessionStorage.getItem("jwt");
 let rows = document.getElementById("rows"); // Table Body
 let liUser = document.getElementById("users"); // Users Button
+let count = document.getElementById("count");
+
+let multDelete = document.getElementById("multDelete");
+let msgMultDelete = document.getElementById("msgMultDelete");
+let deleteMultContact = document.getElementById("deleteMultContact");
+
 let full_name = document.getElementById("full_name");
 let email = document.getElementById("email");
 let position = document.getElementById("position");
@@ -10,6 +19,7 @@ let listCountries = document.getElementById("countries");
 let listCities = document.getElementById("cities");
 let interest = document.getElementById("interest");
 let fav_channel = document.getElementById("fav_channel");
+
 let add = document.getElementById("add");
 let btnAddContact = document.getElementById("addContact");
 let btnUpdateContact = document.getElementById("updateContact");
@@ -22,9 +32,8 @@ setTimeout(() => {
 }, 100);
 
 window.onload = function () {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
-        if (parseJwt(jwt).roleId == 2) {
+        if (utils.parseJwt(jwt).roleId == 2) {
             liUser.remove();
         }
         fetch('http://localhost:5000/contacts/', {
@@ -33,7 +42,7 @@ window.onload = function () {
         }).then(res => {
             res.json().then(data => {
                 data.forEach((e) => {
-                    let template = `<tr><td><input type="checkbox"></td>
+                    let template = `<tr><td><input type="checkbox" data-id="${e.contactsId}" onclick="getChecked()"></td>
                         <td>${e.full_name}<br>${e.email}</td>
                         <td>${e.city}</td>
                         <td>${e.company}</td>
@@ -49,25 +58,60 @@ window.onload = function () {
                     rows.insertAdjacentHTML('beforeend', template);
                 });
             });
-            findCompanies(jwt);
-            findRegions(jwt);
+            
         }).catch(error => {
             console.log(error);
         });
     } else {
         location.href = "../html/index.html";
     }
-    add.addEventListener('click', () => {
-        full_name.value = "";
-        email.value = "";
-        position.value = "";
-        btnUpdateContact.style.display = "none";
-        btnAddContact.style.display = "initial";
-    });
-    btnAddContact.addEventListener('click', () => {
-        addContact(jwt);
-    });
+    findCompanies(jwt);
+    findRegions(jwt);
 };
+
+let idsContacts = [];
+
+function getChecked() {
+    let itemSelect = document.querySelectorAll('input[type="checkbox"]:checked');
+    count.innerHTML = itemSelect.length + " Select";
+    multDelete.style.display = itemSelect.length < 2 ? "none": "initial";
+}
+
+deleteMultContact.addEventListener('click', () => {
+    multDeleteContacts();
+});
+
+function multDeleteContacts() {
+    let itemSelect = document.querySelectorAll('input[type="checkbox"]:checked');
+    itemSelect.forEach((e) => {
+        if (jwt != null) {
+            fetch(`http://localhost:5000/contacts/${e.dataset.id}`, {
+                method: 'DELETE',
+                headers:{"Content-Type":"application/json"}
+            }).then(res => {
+                if (res.status == 200) {
+                } else {
+                    console.log("error");
+                }
+            }).catch(error => {
+                 console.log(error);
+            }); 
+        }
+    });
+    location.href = location.href;
+}
+
+add.addEventListener('click', () => {
+    full_name.value = "";
+    email.value = "";
+    position.value = "";
+    btnUpdateContact.style.display = "none";
+    btnAddContact.style.display = "initial";
+});
+
+btnAddContact.addEventListener('click', () => {
+    addContact(jwt);
+});
 
 function findCompanies(jwt) {
     fetch('http://localhost:5000/companies/', {
@@ -96,26 +140,27 @@ function findRegions(jwt) {
                 listRegions.insertAdjacentHTML('beforeend', templateRegions);
             });
         });
-        listRegions.addEventListener('change', () => {
-            document.getElementById('countries').innerHTML = '';
-            document.getElementById('cities').innerHTML = '';
-            let optionCountries = document.createElement("option");
-            let optionCities = document.createElement("option");
-            optionCountries.innerHTML = "Select...";
-            optionCountries.value = 0;
-            optionCities.innerHTML = "Select...";
-            optionCities.value = 0;
-            listCountries.appendChild(optionCountries);
-            listCities.appendChild(optionCities);
-            findCountries(jwt, listRegions.value);
-        });
+        
     }).catch(error => {
         console.log(error);
     });
 };
 
+listRegions.addEventListener('change', () => {
+    document.getElementById('countries').innerHTML = '';
+    document.getElementById('cities').innerHTML = '';
+    let optionCountries = document.createElement("option");
+    let optionCities = document.createElement("option");
+    optionCountries.innerHTML = "Select...";
+    optionCountries.value = 0;
+    optionCities.innerHTML = "Select...";
+    optionCities.value = 0;
+    listCountries.appendChild(optionCountries);
+    listCities.appendChild(optionCities);
+    findCountries(jwt, listRegions.value);
+});
+
 function findCountries(jwt, regionId) {
-    console.log(regionId);
     if (regionId != 0)
     fetch(`http://localhost:5000/rcc/countries/${regionId}`, {
             method: 'GET',
@@ -127,21 +172,21 @@ function findCountries(jwt, regionId) {
                 listCountries.insertAdjacentHTML('beforeend', templateCountries);
             });
         });
-        listCountries.addEventListener('change', () => {
-            document.getElementById('cities').innerHTML = '';
-            let optionCities = document.createElement("option");
-            optionCities.innerHTML = "Select...";
-            optionCities.value = 0;
-            listCities.appendChild(optionCities);
-            findCities(jwt, listCountries.value);
-        });
     }).catch(error => {
         console.log(error);
     });
 }
 
+listCountries.addEventListener('change', () => {
+    document.getElementById('cities').innerHTML = '';
+    let optionCities = document.createElement("option");
+    optionCities.innerHTML = "Select...";
+    optionCities.value = 0;
+    listCities.appendChild(optionCities);
+    findCities(jwt, listCountries.value);
+});
+
 function findCities(jwt, countryId) {
-    console.log(countryId);
     if (countryId != 0)
     fetch(`http://localhost:5000/rcc/cities/${countryId}`, {
             method: 'GET',
@@ -151,25 +196,14 @@ function findCities(jwt, countryId) {
             data.forEach((e) => {
                 let templateCities = `<option value=${e.id}>${e.description}</option>`
                 listCities.insertAdjacentHTML('beforeend', templateCities);
-                /* document.getElementById('cities').innerHTML = '';
-                let option = document.createElement("option");
-                option.innerHTML = "Select...";
-                option.value = 0;
-                listCities.appendChild(option); */
             });
         });
-        /* listCities.addEventListener('change', () => {
-            document.getElementById('cities').innerHTML = '';
-        }); */
     }).catch(error => {
         console.log(error);
     });
 }
 
 function addContact(jwt) {
-    console.log(jwt);
-    console.log(listCities.value);
-    console.log(listCompanies.value);
     if (jwt != null) {
        fetch("http://localhost:5000/contacts/add", {
             method: 'POST',
@@ -186,13 +220,15 @@ function addContact(jwt) {
     }).then(res => {
         if (res.status == 200) {
             res.json().then(data => {
-                alert("Contact Create Successful")
+                alert("Contact Create Successful");
+                location.href = location.href;
             });
         } else {
-            console.log("error");
+            alert("Contact already exists!!! or data inputs incorrect!!!");
             }
         }).catch(error => {
             console.log(error);
+            alert("Contact already exists!!! or data inputs incorrect!!!");
         }); 
     } 
 }
@@ -210,7 +246,6 @@ function getContact(contactId) {
                 email.value = data[0].email;
                 position.value = data[0].position;
                 fOptCom.innerHTML = "Select...";
-                console.log(data);
              });
          } else {
              console.log("error");
@@ -221,10 +256,18 @@ function getContact(contactId) {
     }
     btnAddContact.style.display = "none";
     btnUpdateContact.style.display = "initial";
-    btnUpdateContact.addEventListener('click', () => {
-        updateContact(jwt, contactId);
-    });
+    setIdContactUpdate(contactId);
 }
+
+let idContactUpdate = 0;
+
+function setIdContactUpdate(contactId) {
+    idContactUpdate = contactId;
+}
+
+btnUpdateContact.addEventListener('click', () => {
+    updateContact(jwt, idContactUpdate);
+});
 
 function updateContact(jwt, contactId) {
     if (jwt != null) {
@@ -236,13 +279,14 @@ function updateContact(jwt, contactId) {
                 "cityId": ${listCities.value},
                 "companyId": ${listCompanies.value},
                 "position": "${position.value}",
-                "fav_channel": "Whatsapp",
+                "fav_channel": "${fav_channel.value}",
                 "interest": "${interest.value}"
             }`,
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("Contact Updated Successful")
+                alert("Contact Updated Successful");
+                location.href = location.href;
             } else {
                 console.log("error");
             }
@@ -252,21 +296,25 @@ function updateContact(jwt, contactId) {
     }
 }
 
+let idContactDelete = 0;
+
 function confirmation(contactId) {
-    btnDeleteContact.addEventListener('click', ()=> {
-        deleteContact(contactId);
-    });
+    idContactDelete = contactId;
 }
 
+btnDeleteContact.addEventListener('click', () => {
+    deleteContact(idContactDelete);
+});
+
 function deleteContact(contactId) {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         fetch(`http://localhost:5000/contacts/${contactId}`, {
             method: 'DELETE',
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("Contact Deleted Successfully")
+                alert("Contact Deleted Successfully");
+                location.href = location.href;
             } else {
                 console.log("error");
             }

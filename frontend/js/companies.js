@@ -1,5 +1,12 @@
+let jwt = sessionStorage.getItem("jwt");
 let rows = document.getElementById("rows"); // Table Body
 let liUser = document.getElementById("users"); // Users Button
+let count = document.getElementById("count");
+
+let multDelete = document.getElementById("multDelete");
+let msgMultDelete = document.getElementById("msgMultDelete");
+let deleteMultCompany = document.getElementById("deleteMultCompany");
+
 let name = document.getElementById("name");
 let address = document.getElementById("address");
 let email = document.getElementById("email");
@@ -8,6 +15,7 @@ let listRegions = document.getElementById("regions");
 let listCountries = document.getElementById("countries");
 let listCities = document.getElementById("cities");
 let title = document.getElementById("title");
+
 let add = document.getElementById("add");
 let btnAddCompany = document.getElementById("addCompany");
 let btnUpdateCompany = document.getElementById("updateCompany");
@@ -20,7 +28,6 @@ setTimeout(() => {
 }, 100);
 
 window.onload = function () {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         if (parseJwt(jwt).roleId == 2) {
             liUser.remove();
@@ -31,7 +38,7 @@ window.onload = function () {
         }).then(res => {
             res.json().then(data => {
                 data.forEach((e) => {
-                    let template = `<tr><td><input type="checkbox"></td>
+                    let template = `<tr><td><input type="checkbox" onclick="getChecked(${e.companyId})"></td>
                         <td>${e.name}</td>
                         <td>${e.address}</td>
                         <td>${e.email}</td>
@@ -43,25 +50,78 @@ window.onload = function () {
                     rows.insertAdjacentHTML('beforeend', template);
                 });
             });
-            findRegions(jwt);
         }).catch(error => {
             console.log(error);
         });
     } else {
         location.href = "../html/index.html";
     }
-    add.addEventListener('click', () => {
-        name.value = "";
-        address.value = "";
-        email.value = "";
-        phone.value = "";
-        btnUpdateCompany.style.display = "none";
-        btnAddCompany.style.display = "initial";
-    });
-    btnAddCompany.addEventListener('click', () => {
-        addCompany(jwt);
-    });
 };
+
+let idsCompanies = [];
+
+function getChecked(idCompany) {
+    let itemSelect = document.querySelectorAll('input[type="checkbox"]:checked');
+    count.innerHTML = itemSelect.length + " Select";
+    if (itemSelect.length == 0 || itemSelect.length == 1) {
+        multDelete.style.display = "none";
+    } else {
+        multDelete.style.display = "initial";
+    }
+
+    if (idsCompanies.indexOf(idCompany) == -1) {
+        idsCompanies.push(idCompany);
+        setIdsContacts(idsCompanies);
+    } else {
+        idsCompanies.splice(idsCompanies.indexOf(idCompany), 1);
+        setIdsContacts(idsCompanies);
+    }
+}
+
+let idsCompaniesDelete = [];
+
+function setIdsContacts(itemSelect) {
+    idsCompaniesDelete = itemSelect;
+}
+
+deleteMultCompany.addEventListener('click', () => {
+    multDeleteCompanies(idsCompaniesDelete);
+});
+
+function multDeleteCompanies(companies) {
+    companies.forEach((e) => {
+        if (jwt != null) {
+            fetch(`http://localhost:5000/companies/${e}`, {
+                method: 'DELETE',
+                headers:{"Content-Type":"application/json"}
+            }).then(res => {
+                if (res.status == 200) {
+                } else {
+                    console.log("error");
+                }
+            }).catch(error => {
+                 console.log(error);
+            }); 
+        }
+    });
+    location.href = location.href;
+}
+
+// Add Company //
+
+add.addEventListener('click', () => {
+    name.value = "";
+    address.value = "";
+    email.value = "";
+    phone.value = "";
+    btnUpdateCompany.style.display = "none";
+    btnAddCompany.style.display = "initial";
+    findRegions(jwt);
+});
+
+btnAddCompany.addEventListener('click', () => {
+    addCompany(jwt);
+});
 
 function findRegions(jwt) {
     fetch('http://localhost:5000/rcc/regions/', {
@@ -74,26 +134,26 @@ function findRegions(jwt) {
                 listRegions.insertAdjacentHTML('beforeend', templateRegions);
             });
         });
-        listRegions.addEventListener('change', () => {
-            document.getElementById('countries').innerHTML = '';
-            document.getElementById('cities').innerHTML = '';
-            let optionCountries = document.createElement("option");
-            let optionCities = document.createElement("option");
-            optionCountries.innerHTML = "Select...";
-            optionCountries.value = 0;
-            optionCities.innerHTML = "Select...";
-            optionCities.value = 0;
-            listCountries.appendChild(optionCountries);
-            listCities.appendChild(optionCities);
-            findCountries(jwt, listRegions.value);
-        });
     }).catch(error => {
         console.log(error);
     });
 };
 
-function findCountries(jwt, regionId) {
-    console.log(regionId);
+listRegions.addEventListener('change', () => {
+    document.getElementById('countries').innerHTML = '';
+    document.getElementById('cities').innerHTML = '';
+    let optionCountries = document.createElement("option");
+    let optionCities = document.createElement("option");
+    optionCountries.innerHTML = "Select...";
+    optionCountries.value = 0;
+    optionCities.innerHTML = "Select...";
+    optionCities.value = 0;
+    listCountries.appendChild(optionCountries);
+    listCities.appendChild(optionCities);
+    findCountries(listRegions.value);
+});
+
+function findCountries(regionId) {
     if (regionId != 0)
     fetch(`http://localhost:5000/rcc/countries/${regionId}`, {
             method: 'GET',
@@ -105,21 +165,21 @@ function findCountries(jwt, regionId) {
                 listCountries.insertAdjacentHTML('beforeend', templateCountries);
             });
         });
-        listCountries.addEventListener('change', () => {
-            document.getElementById('cities').innerHTML = '';
-            let optionCities = document.createElement("option");
-            optionCities.innerHTML = "Select...";
-            optionCities.value = 0;
-            listCities.appendChild(optionCities);
-            findCities(jwt, listCountries.value);
-        });
     }).catch(error => {
         console.log(error);
     });
 }
 
-function findCities(jwt, countryId) {
-    console.log(countryId);
+listCountries.addEventListener('change', () => {
+    document.getElementById('cities').innerHTML = '';
+    let optionCities = document.createElement("option");
+    optionCities.innerHTML = "Select...";
+    optionCities.value = 0;
+    listCities.appendChild(optionCities);
+    findCities(listCountries.value);
+});
+
+function findCities(countryId) {
     if (countryId != 0)
     fetch(`http://localhost:5000/rcc/cities/${countryId}`, {
             method: 'GET',
@@ -129,16 +189,8 @@ function findCities(jwt, countryId) {
             data.forEach((e) => {
                 let templateCities = `<option value=${e.id}>${e.description}</option>`
                 listCities.insertAdjacentHTML('beforeend', templateCities);
-                /* document.getElementById('cities').innerHTML = '';
-                let option = document.createElement("option");
-                option.innerHTML = "Select...";
-                option.value = 0;
-                listCities.appendChild(option); */
             });
         });
-        /* listCities.addEventListener('change', () => {
-            document.getElementById('cities').innerHTML = '';
-        }); */
     }).catch(error => {
         console.log(error);
     });
@@ -159,7 +211,8 @@ function addCompany(jwt) {
     }).then(res => {
         if (res.status == 200) {
             res.json().then(data => {
-                alert("Company Create Successful")
+                alert("Company Create Successful");
+                location.href = location.href;
             });
         } else {
             console.log("error");
@@ -170,8 +223,11 @@ function addCompany(jwt) {
     } 
 }
 
+// Add Company //
+
+// Update Company //
+
 function getCompany(companyId) {
-    let jwt = sessionStorage.getItem("jwt");
     if (jwt != null) {
         fetch(`http://localhost:5000/companies/${companyId}`, {
              method: 'GET',
@@ -194,10 +250,19 @@ function getCompany(companyId) {
     title.innerHTML = "Update Contact";
     btnAddCompany.style.display = "none";
     btnUpdateCompany.style.display = "initial";
-    btnUpdateCompany.addEventListener('click', () => {
-        updateCompany(jwt, companyId);
-    });
+    findRegions(jwt);
+    setIdCompanyUpdate(companyId);
 }
+
+let idCompanyUpdate = 0;
+
+function setIdCompanyUpdate(companyId) {
+    idCompanyUpdate = companyId;
+}
+
+btnUpdateCompany.addEventListener('click', () => {
+    updateCompany(jwt, idCompanyUpdate);
+});
 
 function updateCompany(jwt, companyId) {
     if (jwt != null) {
@@ -213,7 +278,8 @@ function updateCompany(jwt, companyId) {
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("User Updated Successful")
+                alert("Company Updated Successful");
+                location.href = location.href;
             } else {
                 console.log("error");
             }
@@ -223,11 +289,19 @@ function updateCompany(jwt, companyId) {
     }
 }
 
+// Update Company //
+
+// Delete Company //
+
+let setIdCompanyDelete = 0;
+
 function confirmation(companyId) {
-    btnDeleteCompany.addEventListener('click', ()=> {
-        deleteCompany(companyId);
-    });
+    setIdCompanyDelete = companyId;
 }
+
+btnDeleteCompany.addEventListener('click', ()=> {
+    deleteCompany(setIdCompanyDelete);
+});
 
 function deleteCompany(companyId) {
     let jwt = sessionStorage.getItem("jwt");
@@ -237,7 +311,8 @@ function deleteCompany(companyId) {
             headers:{"Content-Type":"application/json"}
         }).then(res => {
             if (res.status == 200) {
-                alert("Company Deleted Successfully")
+                alert("Company Deleted Successfully");
+                location.href = location.href;
             } else {
                 console.log("error");
             }
@@ -246,6 +321,8 @@ function deleteCompany(companyId) {
         }); 
     }
 }
+
+// Delete Company //
 
 function parseJwt(token) {
     var base64Url = token.split('.')[1];

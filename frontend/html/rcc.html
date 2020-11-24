@@ -51,7 +51,9 @@
     <div class="containerUp">
       <button class="btn active btn-sm"><i class="fas fa-download"></i></button>
       <button class="btn active btn-sm">Export RCC</button>
-      <button id="add" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalCRUD">Add RCC</button>
+      <button id="add" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalCRUD"><span class="material-icons">add</span></button>
+      <button id="update" type='button' class='btn btn-info btn-smi' data-toggle="modal" data-target="#modalUp"><span class="material-icons">create</span></button>
+      <button id="delete" type='button' class='btn btn-danger btn-smd' data-toggle="modal" data-target="#modalDelete"><span class="material-icons">delete</span></button>
     </div>
     <section id="list">
       <div class="container">
@@ -62,7 +64,6 @@
               <th>Region</th>
               <th>Country</th>
               <th>City</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="rows">
@@ -92,15 +93,6 @@
                 <div id="modalBody" class="col-md-12">
                   <h3 id="msg">New Location</h3>
                   
-                  
-                  <!-- <div class="form-group">
-                    <label class="control-label">Country *</label>
-                    <input id="country" maxlength="100" type="text" required="required" class="form-control" placeholder="Country" />
-                  </div>
-                  <div class="form-group">
-                    <label class="control-label">City *</label>
-                    <input id="city" maxlength="100" type="email" required="required" class="form-control" placeholder="City" />
-                  </div> -->
                 </div>
               </div>
             </form>
@@ -115,18 +107,82 @@
         </div>
       </div>
     </div>
+    <div id="modalUp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="title" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h2 id="title">Update RCC</h2>
+            <div class="form-group">
+                <button id="upRegion" class="btn btn-success" type="button">Update Region</button>
+                <button id="upCountry" class="btn btn-success" type="button">Update Country</button>
+                <button id="upCity" class="btn btn-success" type="button">Update City</button>
+            </div>
+          </div>
+          <div class="modal-body">
+            <form role="form" class="needs-validation" novalidate>
+              <div class="col-xs-12">
+                <div id="modalBodyUp" class="col-md-12">
+                  <h3 id="msgUp">Update Location</h3>
+                
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="updateRegion" class="btn btn-success" type="button" data-dismiss="modal">Update Region</button>
+            <button id="updateCountry" class="btn btn-success" type="button" data-dismiss="modal">Update Country</button>
+            <button id="updateCity" class="btn btn-success" type="button" data-dismiss="modal">Update City</button>
+            <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="modalDelete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="title" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h2>!Delete RCC!</h2>
+            <h2 id="title">Delete RCC</h2>
+            <div class="form-group">
+                <button id="delRegion" class="btn btn-success" type="button">Delete Region</button>
+                <button id="delCountry" class="btn btn-success" type="button">Delete Country</button>
+                <button id="delCity" class="btn btn-success" type="button">Delete City</button>
+            </div>
+          </div>
+          <div class="modal-body">
+            <form role="form" class="needs-validation" novalidate>
+              <div class="col-xs-12">
+                <div id="modalBodyDel" class="col-md-12">
+                  <h3 id="msgDel">Delete Locations</h3>
+                
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="deleteRegion" class="btn btn-success" type="button" data-toggle="modal" data-target="#modalConfirm">Delete Region</button>
+            <button id="deleteCountry" class="btn btn-success" type="button" data-toggle="modal" data-target="#modalConfirm">Delete Country</button>
+            <button id="deleteCity" class="btn btn-success" type="button" data-toggle="modal" data-target="#modalConfirm">Delete City</button>
+            <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modalConfirm" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="title" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h2>!Delete!</h2>
           </div>
           <div class="modal-body">
             <h5>Do you really want to delete?</h5>
           </div>
           <div class="modal-footer">
-            <button id="deleteCompany" class="btn btn-danger" type="button" data-dismiss="modal">Delete RCC</button>
+            <button id="regionDelete" class="btn btn-danger" type="button" data-dismiss="modal">Delete Region</button>
+            <button id="countryDelete" class="btn btn-danger" type="button" data-dismiss="modal">Delete Country</button>
+            <button id="cityDelete" class="btn btn-danger" type="button" data-dismiss="modal">Delete City</button>
             <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
           </div>
         </div>

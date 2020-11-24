@@ -53,6 +53,10 @@
       <button class="btn active btn-sm">Export Contacts</button>
       <button id="add" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalCRUD">Add Contact</button>
     </div>
+    <div class="count">
+      <h5 id="count">0 Select</h5>
+      <button id="multDelete" class="btn btn-danger" data-toggle="modal" data-target="#modalMultDelete">Delete Contacts</button>
+    </div>
     <section id="list">
       <div class="container">
         <table id="tContacts" class="display" style="width:100%">
@@ -77,6 +81,23 @@
         </table>
       </div>
     </section>
+    <div id="modalMultDelete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="title" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h2>!Delete Multiple Contacts!</h2>
+          </div>
+          <div class="modal-body">
+            <h5 id="msgMultDelete">Do you really want to delete?</h5>
+          </div>
+          <div class="modal-footer">
+            <button id="deleteMultContact" class="btn btn-danger" type="button" data-dismiss="modal">Delete Contacts</button>
+            <button class="btn btn-danger" type="button" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="modalCRUD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="title" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">

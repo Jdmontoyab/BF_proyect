@@ -55,6 +55,12 @@ const deleteRegion = async (id) => {
   );
 };
 
+const findAllCountries = async () => {
+  return await database.sequelize.query(`SELECT * FROM COUNTRIES;`, {
+    type: database.sequelize.QueryTypes.SELECT,
+  });
+};
+
 const findCountriesByRegionId = async (regionId) => {
     return await database.sequelize.query(`SELECT * FROM COUNTRIES WHERE REGIONID=${regionId};`, {
       type: database.sequelize.QueryTypes.SELECT,
@@ -129,6 +135,7 @@ module.exports = {
     addRegion,
     updateRegion,
     deleteRegion,
+    findAllCountries,
     findCountriesByRegionId,
     findCountryByDescription,
     addCountry,

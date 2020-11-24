@@ -5,6 +5,19 @@ const { validateToken } = require("../middlewares/contacts");
 
 // REGIONS //
 
+router.post('/regions/create', async (req, res)=>{
+  try {
+    const region = await access.findRegionByDescription(req.body);
+    if (region.length) {
+      return res.status(409).json({ error: "Region already exists!" });
+    }
+    await access.addRegion(req.body);
+    res.json(req.body);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.get("/regions", validateToken, async (req, res) => {
   try {
     let regions = await access.findRegions();
@@ -26,19 +39,7 @@ router.get("/regions/:id", async (req, res) => {
   }
 });
 
-router.post('/regions/create', async (req, res)=>{
-  try {
-    const region = await access.findRegionByDescription(req.body);
-    console.log(region);
-    if (region.length) {
-      return res.status(409).json({ error: "Region already exists!" });
-    }
-    await access.addRegion(req.body);
-    res.json(req.body);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+
 
 router.put("/regions/:id", async (req, res) => {
   try {
@@ -65,6 +66,15 @@ router.delete("/regions/:id", async (req, res) => {
 });
 
 // COUNTRIES //
+
+router.get("/countries", async (req, res) => {
+  try {
+    let countries = await access.findAllCountries();
+    return res.json(countries);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 router.get("/countries/:regionid", async (req, res) => {
   try {
@@ -116,7 +126,7 @@ router.delete("/countries/:id", async (req, res) => {
 
 // CITIES //
 
-router.get("/", async (req, res) => {
+router.get("/cities", async (req, res) => {
   try {
     let cities = await access.findAll();
     res.status(200).json(cities);

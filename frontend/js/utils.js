@@ -8,7 +8,3 @@ class Utils {
         return JSON.parse(jsonPayload);
     };
 };
-
-module.exports = {
-    Utils
-}

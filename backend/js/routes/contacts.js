@@ -1,11 +1,8 @@
 const router = require("express").Router();
 
-const { validateToken, validatePermissions, validateAddContact } = require("../middlewares/contacts");
+const { validateToken } = require("../middlewares/contacts");
 
-const jwt = require("jsonwebtoken");
 const access = require("../database/access/contacts");
-
-//const SECRET = "70k3n1d";
 
 router.get("/", validateToken, async (req, res) => {
   try {
@@ -20,7 +17,7 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    let contact = await access.findById(id);
+    let contact = await access.findContactById(id);
 
     return res.json(contact);
   } catch (error) {
@@ -30,8 +27,6 @@ router.get("/:id", async (req, res) => {
 
 router.post('/add', async (req, res)=>{
   try {
-    console.log("Hola");
-    console.log(req.body);
     const contact = await access.findByEmail(req.body);
     if (contact.length) {
       return res.status(409).json({ error: "Contact already exists!" });
@@ -48,7 +43,7 @@ router.put("/:id", async (req, res) => {
     const { id } = req.params;
       
     await access.updateContact(req.body, id);
-
+    
     res.json(req.body);
   } catch (error) {
     res.status(400).json({ error: error.message });
